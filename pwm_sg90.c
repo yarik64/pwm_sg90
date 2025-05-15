@@ -48,7 +48,7 @@ int main() {
         sleep_ms(100);
         fade += d;
         if (fade == 256 || fade == 0) d *= -1;
-		pwm_set_gpio_level(WHEEL1_PIN, fade);
-		pwm_set_gpio_level(WHEEL2_PIN, fade);
+        pwm_set_gpio_level(WHEEL1_PIN, fade);
+        pwm_set_gpio_level(WHEEL2_PIN, fade);
     }
 }
