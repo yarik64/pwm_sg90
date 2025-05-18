@@ -9,32 +9,42 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 
-#define WHEEL1_PIN 2
-#define WHEEL2_PIN 4
-#define RULE_PIN
+#define KILO 1e3
+#define MICRO 1e-6
+#define WRAP 10000
+#define PWM_FREQ 50 // PWM frequency in hertz
+
+#define WHEEL1_PIN 16
+#define WHEEL2_PIN 17
+#define RULE_PIN   15
 
 int main() {
     /// \tag::setup_pwm[]
+    float clkdiv = (float)frequency_count_khz(CLOCKS_FC0_SRC_VALUE_PLL_SYS_CLKSRC_PRIMARY) * (float)KILO / (PWM_FREQ * WRAP);
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, clkdiv);
 
-    // Tell GPIO 0 and 1 they are allocated to the PWM
+
     gpio_set_function(WHEEL1_PIN, GPIO_FUNC_PWM);
     gpio_set_function(WHEEL2_PIN, GPIO_FUNC_PWM);
-    // gpio_set_function(RULE_PIN,   GPIO_FUNC_PWM);
+    gpio_set_function(RULE_PIN,   GPIO_FUNC_PWM);
 
-    // Find out which PWM slice is connected to GPIO 0 (it's slice 0)
+
     uint slice_num_wheel1 = pwm_gpio_to_slice_num(WHEEL1_PIN);
     uint slice_num_wheel2 = pwm_gpio_to_slice_num(WHEEL2_PIN);
-    // uint slice_num = pwm_gpio_to_slice_num(0);
+    uint slice_num_rule   = pwm_gpio_to_slice_num(RULE_PIN);
 
-    // Set period of 4 cycles (0 to 3 inclusive)
-    pwm_set_wrap(slice_num_wheel1, 256);
-    pwm_set_wrap(slice_num_wheel2, 256);
-    // pwm_set_wrap(slice_num, 3);
-    // Set channel A output high for one cycle before dropping
-    pwm_set_chan_level(slice_num_wheel1, PWM_CHAN_A, 1);
-    pwm_set_chan_level(slice_num_wheel2, PWM_CHAN_A, 1);
-    // pwm_set_chan_level(slice_num, PWM_CHAN_A, 1);
-    // Set the PWM running
+
+    pwm_set_wrap(slice_num_wheel1, 255);
+    pwm_set_wrap(slice_num_wheel2, 255);
+    pwm_init(slice_num_rule, &config, true);
+
+
+    pwm_set_chan_level(slice_num_wheel1, PWM_CHAN_A, 0);
+    pwm_set_chan_level(slice_num_wheel2, PWM_CHAN_A, 0);
+    pwm_set_chan_level(slice_num_rule,   PWM_CHAN_A, 0);
+
+
     pwm_set_enabled(slice_num_wheel1, true);
     pwm_set_enabled(slice_num_wheel2, true);
     // pwm_set_enabled(slice_num, true);
@@ -42,7 +52,9 @@ int main() {
 
     // Note we could also use pwm_set_gpio_level(gpio, x) which looks up the
     // correct slice and channel for a given GPIO.
-    static int fade = 0, d = 16;
+    static int fade = 0, d = 16, s = 1;
+
+
 
     for(;;) {
         sleep_ms(100);
