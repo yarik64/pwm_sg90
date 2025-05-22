@@ -4,12 +4,18 @@ BLDDIR = build
 OCDCP  = ocd/
 PRJNME = pwm_sg90
 
-all:
+build: cmake ninja_build
+
+
+
+cmake: CMakeLists.txt
 	cmake . \
 		-G $(GEN) \
 		-B $(BLDDIR) \
 		-DCMAKE_BUILD_TYPE=Debug
 
+
+ninja_build:
 	ninja-build -C $(BLDDIR)
 
 
@@ -22,4 +28,4 @@ flash:
 
 
 clean:
-	$(RM) -r $(wildcard ./*~ $(BLDDIR))
+	$(RM) -r $(wildcard ./*~ ./src/*~ $(BLDDIR))
