@@ -1,6 +1,6 @@
-= ROBO CAR PROJECT =
+# ROBO CAR PROJECT
 
-== How to build ==
+## How to build
 
 ```sh
 $ git clone https://github.com/yarik64/${PROJECT\_NAME}.git
