@@ -14,8 +14,8 @@
 
 // define pins
 #define WHEEL1 16
-#define WHEEL2 17
-#define RULE   15
+#define WHEEL2 15
+#define RULE   23
 
 // define UART const
 #define UART_ID uart0
@@ -28,8 +28,6 @@
 // datasheet for information on which other pins can be used.
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
-
-static int chars_rxed = 0;
 
 // RX interrupt handler
 void on_uart_rx() {
@@ -46,7 +44,7 @@ void on_uart_rx() {
                 // define rule direction
 			    rule_set_dir((int)ch1);
             } else {
-                uart_puts(UART_ID, "Wrong command!!!");
+                uart_puts(UART_ID, "Wrong command!!!\n\r");
 			}
 	    }
     }
@@ -54,6 +52,7 @@ void on_uart_rx() {
 
 
 int my_uart_init(){
+    stdio_init_all();
     uart_init(UART_ID, 2400);
     gpio_set_function(UART_TX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_TX_PIN));
     gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
@@ -82,19 +81,8 @@ int init_wheel(int wheel_pin) {
 
 
 int init_rule() {
-    // float clkdiv = (float)frequency_count_khz(CLOCKS_FC0_SRC_VALUE_PLL_SYS_CLKSRC_PRIMARY) * (float)KILO / (PWM_FREQ * WRAP);
-
-    // pwm_config config = pwm_get_default_config();
-    // pwm_config_set_clkdiv(&config, clkdiv);
-
-    // gpio_set_function(RULE_PIN, GPIO_FUNC_PWM);
-    // uint slice_num_rule = pwm_gpio_to_slice_num(RULE_PIN);
-
-	// pwm_init(slice_num_rule, &config, true);
-    // pwm_set_chan_level(slice_num_rule, PWM_CHAN_A, 0);
-    // pwm_set_enabled(slice_num, true);
 	servo_init();
-	servo_clock_auto();
+	servo_clock_manual(125e6);
 	servo_attach(RULE);
 
 	return 0;
@@ -112,13 +100,16 @@ int rule_set_dir(uint angle){
 
 
 int main() {
-    /// \tag::setup_pwm[]
-    /// \end::setup_pwm[]
-
+	my_uart_init();
 	init_wheel(WHEEL1);
 	init_wheel(WHEEL2);
     init_rule();
+	rule_set_dir(90);
+
+	wheel_set_speed(WHEEL2, 0);
+	wheel_set_speed(WHEEL1, 0);
 
     for(;;)
         tight_loop_contents();
 }
+
