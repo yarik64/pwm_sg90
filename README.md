@@ -12,7 +12,7 @@ $ make build
 ### build in docker
 ```sh
 $ docker build -t robocar .
-$ docker cp robocat:build/pwm_sg90.uf2 .
+$ docker cp robocar:build/pwm_sg90.uf2 .
 ```
 
 ## UART commands
@@ -21,18 +21,18 @@ single command must have a 2 chars, looks like this:
 
 ```
 s100
-r15
+d15
 ```
 
 this mean:
 ```
 s - speed 
-r - rule
+d - direction
 ```
 
 second char must have value in interval 0-255
 
 ```
 s0 (speed = 0)
-r 10 (rule to 10. Rule need to calibrated)
+d10 (direction to 10. It's need to calibration)
 ```
