@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.13...3.27)
 
 
-set(PICO_SDK_PATH
-	$ENV{HOME}/projects/MCU/RPico/pico-sdk
-)
+set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/third_party/pico-sdk)
 
 set(CMAKE_MODULE_PATH
 		${CMAKE_MODULE_PATH}
@@ -21,9 +19,9 @@ add_executable(${PROJECT_NAME}
         )
 
 
-add_subdirectory(thrid_party/pico-servo)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thrid_party/pico-servo/include)
-target_link_directories(   ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thrid_party/pico-servo/include)
+add_subdirectory(third_party/pico-servo)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/pico-servo/include)
+target_link_directories(   ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/pico-servo/include)
 
 
 # pull in common dependencies and additional pwm hardware support

@@ -1,3 +1,6 @@
-[submodule "thrid_party/pico-servo"]
-	path = thrid_party/pico-servo
+[submodule "third/pico-servo"]
+	path = third_party/pico-servo
 	url = https://github.com/irishpatrick/pico-servo/
+[submodule "third/pico-sdk"]
+	path = third_party/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk
