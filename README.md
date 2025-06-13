@@ -9,10 +9,10 @@ $ git submodule update --init --recursive
 $ make build
 ```
 
-### build in docker
+### Build in docker
 ```sh
-$ docker build -t robocar .
-$ docker cp robocar:build/pwm_sg90.uf2 .
+$ docker build .
+$ docker cp `docker ps -qn1`:build/pwm_sg90.uf2 .
 ```
 
 ## UART commands
