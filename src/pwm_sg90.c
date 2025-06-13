@@ -1,5 +1,5 @@
 /*
- * LicenseL GNU GPL
+ * License: MIT
  */
 
 #include "pico/stdlib.h"
@@ -11,6 +11,9 @@
 // #define MICRO 1e-6
 // #define WRAP 10000
 // #define PWM_FREQ 50 // PWM frequency in hertz
+
+#define COEFFICIENT 100
+#define TEST_WHEELS 1
 
 // define pins
 #define WHEEL1 16
@@ -37,16 +40,16 @@ void on_uart_rx() {
 
         if (ch0 == 's') {
             // set wheels speed
-			wheel_set_speed(WHEEL1, (int)ch1);
-			wheel_set_speed(WHEEL2, (int)ch1);
+            wheel_set_speed(WHEEL1, (int)ch1);
+            wheel_set_speed(WHEEL2, (int)ch1);
         } else {
-		    if (ch0 == 'd' ) {
+            if (ch0 == 'd' ) {
                 // define rule direction
-			    rule_set_dir((int)ch1);
+                rule_set_dir((int)ch1);
             } else {
                 uart_puts(UART_ID, "Wrong command!!!\n\r");
-			}
-	    }
+            }
+        }
     }
 }
 
@@ -65,7 +68,7 @@ int my_uart_init(){
     irq_set_enabled(UART_IRQ, true);
     uart_set_irq_enables(UART_ID, true, false);
 
-	return 0;
+    return 0;
 }
 
 
@@ -76,38 +79,50 @@ int init_wheel(int wheel_pin) {
     pwm_set_chan_level(slice_num_wheel, PWM_CHAN_A, 0);
     pwm_set_enabled(slice_num_wheel, true);
 
-	return 0;
+    return 0;
 }
 
 
 int init_rule() {
-	servo_init();
-	servo_clock_manual(125e6);
-	servo_attach(RULE);
+    servo_init();
+    servo_clock_manual(125e6);
+    servo_attach(RULE);
 
-	return 0;
+    return 0;
 }
 
 
 int wheel_set_speed(int wheel, int speed){
-    pwm_set_gpio_level(wheel, speed);
+    pwm_set_gpio_level(wheel, speed + COEFFICIENT);
 }
 
 
 int rule_set_dir(uint angle){
-	servo_move_to(RULE, angle);
+    servo_move_to(RULE, angle);
 }
 
 
 int main() {
-	my_uart_init();
-	init_wheel(WHEEL1);
-	init_wheel(WHEEL2);
+    my_uart_init();
+    init_wheel(WHEEL1);
+    init_wheel(WHEEL2);
     init_rule();
-	rule_set_dir(90);
 
-	wheel_set_speed(WHEEL2, 0);
-	wheel_set_speed(WHEEL1, 0);
+# ifdef TEST_RULE
+    rule_set_dir(90);
+    sleep_ms(1000);
+    rule_set_dir(130);
+    sleep_ms(1000);
+    rule_set_dir(60);
+    sleep_ms(1000);
+    rule_set_dir(0);
+    sleep_ms(1000);
+#endif
+
+#ifdef TEST_WHEELS
+    wheel_set_speed(WHEEL1, 200);
+    wheel_set_speed(WHEEL2, 200);
+#endif
 
     for(;;)
         tight_loop_contents();
